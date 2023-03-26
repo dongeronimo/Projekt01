@@ -16,9 +16,9 @@
         android:theme="@style/Theme.Project01"
         tools:targetApi="31">
         <activity
-            android:name="com.geronimodesenvolvimentos.experimental.project01.test.CognitoTestActivity"
+            android:name="com.geronimodesenvolvimentos.experimental.project01.features.user.ui.SignUpActivity"
             android:exported="true"
-            android:label="@string/title_activity_cognito_test"
+            android:label="@string/title_activity_sign_up"
             android:theme="@style/Theme.Project01" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,8 +26,14 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="com.geronimodesenvolvimentos.experimental.project01.test.CognitoTestActivity"
+            android:exported="false"
+            android:label="@string/title_activity_cognito_test"
+            android:theme="@style/Theme.Project01">
+        </activity>
+        <activity
             android:name=".MainActivity"
-            android:exported="true"
+            android:exported="false"
             android:label="@string/app_name"
             android:theme="@style/Theme.Project01">
 
