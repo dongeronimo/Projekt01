@@ -23,7 +23,7 @@ object CognitoServiceModule {
         return CognitoServiceImpl(appContext, cognitoPoolData)
     }
     @Provides
-    @Named("mockSuccessSignUp")
+    @Named("mockHappyPath")
     fun provideMockSignUpSuccess(@ApplicationContext appContext: Context,
                                  @Named("mock") cognitoPoolData: CognitoPoolDataSource)
         : CognitoService = object : CognitoService {
@@ -35,10 +35,54 @@ object CognitoServiceModule {
             delay(timeMillis = 100L)
             return CognitoSentVerificationCode;
         }
+
+        override suspend fun confirmUser(userId: String, code: String): CognitoSignInResult {
+            delay(timeMillis = 100L)
+            return CognitoEmailConfirmed
+        }
+    }
+    @Provides
+    @Named("mockFailureBadConfirmationCode")
+    fun provideBadConfirmationCode(@ApplicationContext appContext: Context,
+                                   @Named("mock") cognitoPoolData: CognitoPoolDataSource) :
+            CognitoService = object :CognitoService {
+        override suspend fun signUp(
+            userId: String,
+            password: String,
+            email: String
+        ): CognitoSignInResult {
+            delay(timeMillis = 100L)
+            return CognitoSentVerificationCode;
+        }
+
+        override suspend fun confirmUser(userId: String, code: String): CognitoSignInResult {
+            delay(timeMillis = 100L)
+            return CognitoBadConfirmationCode;
+        }
     }
 
     @Provides
-    @Named("mockFailureUsernameExistsSignUp")
+    @Named("mockFailureCodeExpired")
+    fun provideCodeExpired(@ApplicationContext appContext: Context,
+                           @Named("mock") cognitoPoolData: CognitoPoolDataSource) :
+            CognitoService = object :CognitoService {
+        override suspend fun signUp(
+            userId: String,
+            password: String,
+            email: String
+        ): CognitoSignInResult {
+            delay(timeMillis = 100L)
+            return CognitoSentVerificationCode;
+        }
+
+        override suspend fun confirmUser(userId: String, code: String): CognitoSignInResult {
+            delay(timeMillis = 100L)
+            return CognitoCodeExpired;
+        }
+    }
+
+    @Provides
+    @Named("mockFailureUsernameExists")
     fun provideMockSignUpFailureUsernameExists(@ApplicationContext appContext: Context,
                                  @Named("mock") cognitoPoolData: CognitoPoolDataSource)
             : CognitoService = object : CognitoService {
@@ -50,10 +94,14 @@ object CognitoServiceModule {
             delay(timeMillis = 100L)
             return CognitoErrorUsernameAlredyExists;
         }
+
+        override suspend fun confirmUser(userId: String, code: String): CognitoSignInResult {
+            TODO("Not yet implemented")
+        }
     }
 
     @Provides
-    @Named("mockFailureErrorSignUp")
+    @Named("mockFailureError")
     fun provideMockSignUpFailureError(@ApplicationContext appContext: Context,
                                       @Named("mock") cognitoPoolData: CognitoPoolDataSource)
             : CognitoService = object : CognitoService {
@@ -62,6 +110,11 @@ object CognitoServiceModule {
             password: String,
             email: String
         ): CognitoSignInResult {
+            delay(timeMillis = 100L)
+            return CognitoUnknownError;
+        }
+
+        override suspend fun confirmUser(userId: String, code: String): CognitoSignInResult {
             delay(timeMillis = 100L)
             return CognitoUnknownError;
         }

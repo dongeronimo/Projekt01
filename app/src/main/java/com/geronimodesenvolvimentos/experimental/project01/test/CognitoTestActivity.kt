@@ -43,9 +43,14 @@ class CognitoTestActivity : ComponentActivity() {
                 }
             }
         }
+//        lifecycleScope.launch {
+//            val signInResult = cognitoService.signUp("BAKER",
+//                "Babilonia#1", "luciano.geronimo.fnord@gmail.com")
+//            Log.d("GEGE", "signInResult = $signInResult")
+//        }
+        //734411
         lifecycleScope.launch {
-            val signInResult = cognitoService.signUp("ABLE",
-                "Babilonia#1", "luciano.geronimo.fnord@gmail.com")
+            val signInResult = cognitoService.confirmUser("BAKER", "734411")
             Log.d("GEGE", "signInResult = $signInResult")
         }
 
