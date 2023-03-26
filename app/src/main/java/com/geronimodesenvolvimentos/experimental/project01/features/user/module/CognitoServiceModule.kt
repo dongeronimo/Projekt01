@@ -40,6 +40,10 @@ object CognitoServiceModule {
             delay(timeMillis = 100L)
             return CognitoEmailConfirmed
         }
+
+        override suspend fun login(userId: String, password: String) {
+            TODO("Not yet implemented")
+        }
     }
     @Provides
     @Named("mockFailureBadConfirmationCode")
@@ -58,6 +62,10 @@ object CognitoServiceModule {
         override suspend fun confirmUser(userId: String, code: String): CognitoSignInResult {
             delay(timeMillis = 100L)
             return CognitoBadConfirmationCode;
+        }
+
+        override suspend fun login(userId: String, password: String) {
+            TODO("Not yet implemented")
         }
     }
 
@@ -79,6 +87,10 @@ object CognitoServiceModule {
             delay(timeMillis = 100L)
             return CognitoCodeExpired;
         }
+
+        override suspend fun login(userId: String, password: String) {
+            TODO("Not yet implemented")
+        }
     }
 
     @Provides
@@ -96,6 +108,10 @@ object CognitoServiceModule {
         }
 
         override suspend fun confirmUser(userId: String, code: String): CognitoSignInResult {
+            TODO("Not yet implemented")
+        }
+
+        override suspend fun login(userId: String, password: String) {
             TODO("Not yet implemented")
         }
     }
@@ -117,6 +133,10 @@ object CognitoServiceModule {
         override suspend fun confirmUser(userId: String, code: String): CognitoSignInResult {
             delay(timeMillis = 100L)
             return CognitoUnknownError;
+        }
+
+        override suspend fun login(userId: String, password: String) {
+            TODO("Not yet implemented")
         }
     }
 }

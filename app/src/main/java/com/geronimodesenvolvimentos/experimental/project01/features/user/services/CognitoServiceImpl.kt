@@ -1,12 +1,16 @@
 package com.geronimodesenvolvimentos.experimental.project01.features.user.services
 
 import android.content.Context
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails
-import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserPool
+import android.util.Log
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.*
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationContinuation
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.AuthenticationDetails
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GenericHandler
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHandler
+import com.amazonaws.mobileconnectors.cognitoidentityprovider.util.CognitoServiceConstants.CHLG_TYPE_USER_PASSWORD
 import com.amazonaws.services.cognitoidentityprovider.model.CodeMismatchException
 import com.amazonaws.services.cognitoidentityprovider.model.ExpiredCodeException
 import com.amazonaws.services.cognitoidentityprovider.model.UsernameExistsException
@@ -79,5 +83,45 @@ class CognitoServiceImpl(private val appContext:Context,
             yield()
         }
         return result
+    }
+
+    override suspend fun login(userId: String, password: String) {
+        val cognitoUser = userPool.getUser(userId)
+        var isDone = false
+        val authHandler = object: AuthenticationHandler {
+            override fun onSuccess(userSession: CognitoUserSession?, newDevice: CognitoDevice?) {
+                isDone = true;
+            }
+
+            override fun getAuthenticationDetails(
+                authenticationContinuation: AuthenticationContinuation,
+                userId: String?
+            ) {
+                val authenticationDetails = AuthenticationDetails(userId, password,
+                    null)
+                Log.d("GEGE", "auth type = ${authenticationDetails.authenticationType}")
+                authenticationDetails.authenticationType = CHLG_TYPE_USER_PASSWORD
+                authenticationContinuation.setAuthenticationDetails(authenticationDetails)
+                authenticationContinuation.continueTask()
+            }
+
+            override fun getMFACode(continuation: MultiFactorAuthenticationContinuation?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun authenticationChallenge(continuation: ChallengeContinuation?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onFailure(exception: java.lang.Exception) {
+                isDone = true;
+                Log.d("GEGE", exception.message!!)
+            }
+
+        }
+        cognitoUser.getSessionInBackground(authHandler)
+        while(!isDone){
+            yield()
+        }
     }
 }
