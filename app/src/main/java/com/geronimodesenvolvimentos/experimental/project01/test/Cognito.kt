@@ -15,7 +15,7 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.cognitoidentityprovider.model.UsernameExistsException
 import com.geronimodesenvolvimentos.experimental.project01.features.user.services.CognitoErrorUsernameAlredyExists
 import com.geronimodesenvolvimentos.experimental.project01.features.user.services.CognitoSentVerificationCode
-import com.geronimodesenvolvimentos.experimental.project01.features.user.services.CognitoSignInResult
+import com.geronimodesenvolvimentos.experimental.project01.features.user.services.CognitoResponse
 import com.geronimodesenvolvimentos.experimental.project01.features.user.services.CognitoUnknownError
 import kotlinx.coroutines.yield
 
@@ -30,9 +30,9 @@ class Cognito(private val appContext:Context, private val poolID:String,
     private val userAttributes = CognitoUserAttributes()
     private val TAG = "GEGE"
     //TODO: Criar versoes mockadas pros casos de failure e sucesso.
-    suspend fun signUpInBackground(userId:String, password: String):CognitoSignInResult {
+    suspend fun signUpInBackground(userId:String, password: String):CognitoResponse {
         var coroutineDoneFlag:Boolean = false;
-        lateinit var result : CognitoSignInResult
+        lateinit var result : CognitoResponse
         val signUpCallback = object: SignUpHandler {
             override fun onSuccess(
                 cognitoUser: CognitoUser?,

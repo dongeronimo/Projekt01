@@ -13,6 +13,9 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHan
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.util.CognitoServiceConstants.CHLG_TYPE_USER_PASSWORD
 import com.amazonaws.services.cognitoidentityprovider.model.CodeMismatchException
 import com.amazonaws.services.cognitoidentityprovider.model.ExpiredCodeException
+import com.amazonaws.services.cognitoidentityprovider.model.InvalidPasswordException
+import com.amazonaws.services.cognitoidentityprovider.model.NotAuthorizedException
+import com.amazonaws.services.cognitoidentityprovider.model.UserNotConfirmedException
 import com.amazonaws.services.cognitoidentityprovider.model.UsernameExistsException
 import com.geronimodesenvolvimentos.experimental.project01.infra.cognitoPool.CognitoPoolDataSource
 import kotlinx.coroutines.yield
@@ -26,11 +29,11 @@ class CognitoServiceImpl(private val appContext:Context,
         userId: String,
         password: String,
         email: String
-    ): CognitoSignInResult {
+    ): CognitoResponse {
         val userAttributes = CognitoUserAttributes()
         userAttributes.addAttribute("email", email)
         var coroutineDoneFlag = false //semaphore to allow the code to proceed after the signUp is done
-        lateinit var result : CognitoSignInResult
+        lateinit var result : CognitoResponse
         val signUpCallback = object: SignUpHandler {
             override fun onSuccess(
                 cognitoUser: CognitoUser?,
@@ -41,10 +44,14 @@ class CognitoServiceImpl(private val appContext:Context,
                 coroutineDoneFlag = true //allows the coroutine to proceed
             }
             override fun onFailure(exception: Exception) {
-                result = if(exception is UsernameExistsException){
+                if(exception is InvalidPasswordException){
+                    result = CognitoInvalidPassword
+                }
+                else if(exception is UsernameExistsException){
                     CognitoErrorUsernameAlredyExists;
-                } else {
-                    CognitoUnknownError;
+                }
+                else {
+                    result = CognitoUnknownError;
                 }
                 coroutineDoneFlag = true//allows the coroutine to proceed
             }
@@ -56,10 +63,10 @@ class CognitoServiceImpl(private val appContext:Context,
         return result
     }
 
-    override suspend fun confirmUser(userId: String, code: String): CognitoSignInResult {
+    override suspend fun confirmUser(userId: String, code: String): CognitoResponse {
         var isDone = false
         val cognitoUser = userPool.getUser(userId);
-        lateinit var result: CognitoSignInResult
+        lateinit var result: CognitoResponse
         cognitoUser.confirmSignUpInBackground(code, false, object: GenericHandler {
             override fun onSuccess() {
                 result = CognitoEmailConfirmed
@@ -85,11 +92,17 @@ class CognitoServiceImpl(private val appContext:Context,
         return result
     }
 
-    override suspend fun login(userId: String, password: String) {
+    override suspend fun login(userId: String, password: String): CognitoResponse {
         val cognitoUser = userPool.getUser(userId)
+        lateinit var result:CognitoResponse
         var isDone = false
         val authHandler = object: AuthenticationHandler {
-            override fun onSuccess(userSession: CognitoUserSession?, newDevice: CognitoDevice?) {
+            override fun onSuccess(userSession: CognitoUserSession, newDevice: CognitoDevice?) {
+                result = CognitoLogInResult(accessToken = userSession.accessToken.jwtToken,
+                    name = userSession.username,
+                    refreshToken = userSession.refreshToken.token,
+                    idToken = userSession.idToken.jwtToken,
+                    accessTokenExpiration = userSession.accessToken.expiration)
                 isDone = true;
             }
 
@@ -114,8 +127,16 @@ class CognitoServiceImpl(private val appContext:Context,
             }
 
             override fun onFailure(exception: java.lang.Exception) {
-                isDone = true;
-                Log.d("GEGE", exception.message!!)
+                if(exception is NotAuthorizedException){
+                    result = CognitoAccessDenied
+                }
+                if(exception is UserNotConfirmedException){
+                    result = CognitoPendingConfirmation
+                }
+                else{
+                    result = CognitoUnknownError
+                }
+                isDone = true
             }
 
         }
@@ -123,5 +144,6 @@ class CognitoServiceImpl(private val appContext:Context,
         while(!isDone){
             yield()
         }
+        return result
     }
 }

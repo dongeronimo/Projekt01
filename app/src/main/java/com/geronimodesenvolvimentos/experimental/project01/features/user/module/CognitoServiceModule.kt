@@ -9,8 +9,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.delay
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.util.*
 import javax.inject.Named
-import javax.inject.Singleton
 
 @Module
 @InstallIn(ActivityComponent::class)
@@ -31,18 +33,21 @@ object CognitoServiceModule {
             userId: String,
             password: String,
             email: String
-        ): CognitoSignInResult {
+        ): CognitoResponse {
             delay(timeMillis = 100L)
             return CognitoSentVerificationCode;
         }
 
-        override suspend fun confirmUser(userId: String, code: String): CognitoSignInResult {
+        override suspend fun confirmUser(userId: String, code: String): CognitoResponse {
             delay(timeMillis = 100L)
             return CognitoEmailConfirmed
         }
 
-        override suspend fun login(userId: String, password: String) {
-            TODO("Not yet implemented")
+        override suspend fun login(userId: String, password: String): CognitoResponse {
+            delay(timeMillis = 100L)
+
+            return CognitoLogInResult(name = "foobar", accessToken = "babababa",
+                refreshToken = "hdkehjrwj", idToken = "3i24u3i", accessTokenExpiration = Date.from(Instant.now()))
         }
     }
     @Provides
@@ -54,17 +59,17 @@ object CognitoServiceModule {
             userId: String,
             password: String,
             email: String
-        ): CognitoSignInResult {
+        ): CognitoResponse {
             delay(timeMillis = 100L)
             return CognitoSentVerificationCode;
         }
 
-        override suspend fun confirmUser(userId: String, code: String): CognitoSignInResult {
+        override suspend fun confirmUser(userId: String, code: String): CognitoResponse {
             delay(timeMillis = 100L)
             return CognitoBadConfirmationCode;
         }
 
-        override suspend fun login(userId: String, password: String) {
+        override suspend fun login(userId: String, password: String) : CognitoResponse{
             TODO("Not yet implemented")
         }
     }
@@ -78,17 +83,17 @@ object CognitoServiceModule {
             userId: String,
             password: String,
             email: String
-        ): CognitoSignInResult {
+        ): CognitoResponse {
             delay(timeMillis = 100L)
             return CognitoSentVerificationCode;
         }
 
-        override suspend fun confirmUser(userId: String, code: String): CognitoSignInResult {
+        override suspend fun confirmUser(userId: String, code: String): CognitoResponse {
             delay(timeMillis = 100L)
             return CognitoCodeExpired;
         }
 
-        override suspend fun login(userId: String, password: String) {
+        override suspend fun login(userId: String, password: String): CognitoResponse {
             TODO("Not yet implemented")
         }
     }
@@ -102,16 +107,16 @@ object CognitoServiceModule {
             userId: String,
             password: String,
             email: String
-        ): CognitoSignInResult {
+        ): CognitoResponse {
             delay(timeMillis = 100L)
             return CognitoErrorUsernameAlredyExists;
         }
 
-        override suspend fun confirmUser(userId: String, code: String): CognitoSignInResult {
+        override suspend fun confirmUser(userId: String, code: String): CognitoResponse {
             TODO("Not yet implemented")
         }
 
-        override suspend fun login(userId: String, password: String) {
+        override suspend fun login(userId: String, password: String) : CognitoResponse{
             TODO("Not yet implemented")
         }
     }
@@ -125,17 +130,17 @@ object CognitoServiceModule {
             userId: String,
             password: String,
             email: String
-        ): CognitoSignInResult {
+        ): CognitoResponse {
             delay(timeMillis = 100L)
             return CognitoUnknownError;
         }
 
-        override suspend fun confirmUser(userId: String, code: String): CognitoSignInResult {
+        override suspend fun confirmUser(userId: String, code: String): CognitoResponse {
             delay(timeMillis = 100L)
             return CognitoUnknownError;
         }
 
-        override suspend fun login(userId: String, password: String) {
+        override suspend fun login(userId: String, password: String): CognitoResponse {
             TODO("Not yet implemented")
         }
     }
