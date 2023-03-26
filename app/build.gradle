@@ -56,7 +56,11 @@ dependencies {
     kaptTest 'com.google.dagger:hilt-android-compiler:2.44'
     androidTestImplementation 'com.google.dagger:hilt-android-testing:2.44'
     kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.44'
+    //aws
+    implementation 'com.amazonaws:aws-android-sdk-core:2.7.4'
+    implementation 'com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.7.0'
 
+    implementation 'androidx.fragment:fragment-ktx:1.6.0-alpha08'
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
     implementation 'androidx.activity:activity-compose:1.7.0'
