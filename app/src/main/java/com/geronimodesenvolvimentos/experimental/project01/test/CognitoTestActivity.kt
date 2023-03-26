@@ -13,11 +13,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import com.amazonaws.regions.Regions
+import com.geronimodesenvolvimentos.experimental.project01.infra.cognitoPool.CognitoPoolDataSource
 import com.geronimodesenvolvimentos.experimental.project01.test.ui.theme.Project01Theme
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Named
 
+@AndroidEntryPoint
 class CognitoTestActivity : ComponentActivity() {
     private lateinit var cognito: Cognito
+    @Inject
+    @Named("real")
+    lateinit var cognitoPoolConfigs: CognitoPoolDataSource
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -31,14 +39,13 @@ class CognitoTestActivity : ComponentActivity() {
                 }
             }
         }
-        cognito = Cognito(appContext = applicationContext, poolID = "projekt01-teste-user-pool",
-        clientID = "2i0dcc3jkh3vh3jnd0511g28vq", clientSecret = "16eu2392s7egk118svec7honbnemal185vh1jb7dgodt9t6ca18v",
-        awsRegion = Regions.SA_EAST_1)
+        cognito = Cognito(appContext = applicationContext, poolID = cognitoPoolConfigs.getPoolID(),
+            clientID = cognitoPoolConfigs.getClientID(), clientSecret = cognitoPoolConfigs.getClientSecret(),
+            awsRegion = cognitoPoolConfigs.getAwsRegion())
         cognito.addAttribute("email", "luciano.geronimo.fnord@gmail.com")
         lifecycleScope.launch {
-            Log.d("GEGE", "comecou a corotina")
-            cognito.signUpInBackground("CHARLIE", "Babilonia#1")
-            Log.d("GEGE", "esperou a corotina")
+            val signInResult = cognito.signUpInBackground("ABLE", "Babilonia#1")
+            Log.d("GEGE", "signInResult = $signInResult")
         }
 
     }

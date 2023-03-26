@@ -12,6 +12,11 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.Authentic
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GenericHandler
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHandler
 import com.amazonaws.regions.Regions
+import com.amazonaws.services.cognitoidentityprovider.model.UsernameExistsException
+import com.geronimodesenvolvimentos.experimental.project01.features.user.services.CognitoErrorUsernameAlredyExists
+import com.geronimodesenvolvimentos.experimental.project01.features.user.services.CognitoSentVerificationCode
+import com.geronimodesenvolvimentos.experimental.project01.features.user.services.CognitoSignInResult
+import com.geronimodesenvolvimentos.experimental.project01.features.user.services.CognitoUnknownError
 import kotlinx.coroutines.yield
 
 //TODO: tranformar isso numa entidade que pode ser injetada
@@ -25,41 +30,32 @@ class Cognito(private val appContext:Context, private val poolID:String,
     private val userAttributes = CognitoUserAttributes()
     private val TAG = "GEGE"
     //TODO: Criar versoes mockadas pros casos de failure e sucesso.
-    suspend fun signUpInBackground(userId:String, password: String) {
-        var flag:Boolean = false;
+    suspend fun signUpInBackground(userId:String, password: String):CognitoSignInResult {
+        var coroutineDoneFlag:Boolean = false;
+        lateinit var result : CognitoSignInResult
         val signUpCallback = object: SignUpHandler {
             override fun onSuccess(
                 cognitoUser: CognitoUser?,
                 userConfirmed: Boolean,
                 cognitoUserCodeDeliveryDetails: CognitoUserCodeDeliveryDetails?
             ) {
-                //TODO: Tem que informar q é sucesso
-                Log.d(TAG, "Sign-up success")
-                flag = true
-//                Toast.makeText(appContext, "Sign-up success", Toast.LENGTH_LONG).show()
-                if(userConfirmed){
-                    // This user must be confirmed and a confirmation code was sent to the user
-                    // cognitoUserCodeDeliveryDetails will indicate where the confirmation code was sent
-                    // Get the confirmation code from user
-                }else{
-//                    Toast.makeText(appContext, "Error: User Confirmed before", Toast.LENGTH_LONG).show()
-                }
+                result = CognitoSentVerificationCode;
+                coroutineDoneFlag = true //allows the coroutine to proceed
             }
             override fun onFailure(exception: Exception) {
-                //TODO: tem que informar que deu erro.
-                Toast.makeText(appContext,"Sign-up failed", Toast.LENGTH_LONG).show();
-                flag = true
-//                Log.d(TAG, "Sign-up failed: " + exception);
+                result = if(exception is UsernameExistsException){
+                    CognitoErrorUsernameAlredyExists;
+                } else {
+                    CognitoUnknownError;
+                }
+                coroutineDoneFlag = true//allows the coroutine to proceed
             }
         }
-        userPool.signUpInBackground(userId, password, this.userAttributes,
-            null, signUpCallback)
-        //TODO: melhorar esse controle
-        while(flag == false){
-            yield()
+        userPool.signUpInBackground(userId, password, this.userAttributes,null, signUpCallback)
+        while(!coroutineDoneFlag){//blocks coroutine progress until the flag is true.
+            yield() //yields to other coroutines to run, i'm waiting for a result here
         }
-        //TODO: ver o que vai retornar
-        Log.d(TAG, "fim da corotina, pode retornar o resultado")
+        return result
     }
 
     fun confirmUser(userId: String, code:String){
