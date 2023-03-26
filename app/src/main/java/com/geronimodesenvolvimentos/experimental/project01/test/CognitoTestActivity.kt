@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import com.amazonaws.regions.Regions
+import com.geronimodesenvolvimentos.experimental.project01.features.user.services.CognitoService
 import com.geronimodesenvolvimentos.experimental.project01.infra.cognitoPool.CognitoPoolDataSource
 import com.geronimodesenvolvimentos.experimental.project01.test.ui.theme.Project01Theme
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,6 +27,9 @@ class CognitoTestActivity : ComponentActivity() {
     @Inject
     @Named("real")
     lateinit var cognitoPoolConfigs: CognitoPoolDataSource
+    @Inject
+    @Named("real")
+    lateinit var cognitoService: CognitoService;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

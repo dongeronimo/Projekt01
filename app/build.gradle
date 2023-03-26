@@ -3,6 +3,13 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
+    id 'jacoco'
+}
+jacoco {
+    toolVersion =  '0.8.1'
+}
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
 }
 
 android {
@@ -26,6 +33,16 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            testCoverageEnabled = true
+        }
+    }
+    testOptions {
+        execution 'ANDROID_TEST_ORCHESTRATOR'
+        animationsDisabled true
+        unitTests {
+            includeAndroidResources = true
         }
     }
     compileOptions {
