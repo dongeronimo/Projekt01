@@ -23,7 +23,7 @@ import javax.inject.Named
 
 @AndroidEntryPoint
 class CognitoTestActivity : ComponentActivity() {
-    private lateinit var cognito: Cognito
+
     @Inject
     @Named("real")
     lateinit var cognitoPoolConfigs: CognitoPoolDataSource
@@ -43,12 +43,9 @@ class CognitoTestActivity : ComponentActivity() {
                 }
             }
         }
-        cognito = Cognito(appContext = applicationContext, poolID = cognitoPoolConfigs.getPoolID(),
-            clientID = cognitoPoolConfigs.getClientID(), clientSecret = cognitoPoolConfigs.getClientSecret(),
-            awsRegion = cognitoPoolConfigs.getAwsRegion())
-        cognito.addAttribute("email", "luciano.geronimo.fnord@gmail.com")
         lifecycleScope.launch {
-            val signInResult = cognito.signUpInBackground("ABLE", "Babilonia#1")
+            val signInResult = cognitoService.signUp("ABLE",
+                "Babilonia#1", "luciano.geronimo.fnord@gmail.com")
             Log.d("GEGE", "signInResult = $signInResult")
         }
 
