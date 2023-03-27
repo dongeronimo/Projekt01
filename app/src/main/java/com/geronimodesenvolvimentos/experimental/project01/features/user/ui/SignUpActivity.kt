@@ -98,7 +98,7 @@ fun Title(modifier:Modifier){
             .padding(start = 8.dp, end = 8.dp, top = 24.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("Welcome!", fontSize = 30.sp)
+        Text("Welcome to Projekt 1!", fontSize = 30.sp)
     }
 
 }
@@ -108,7 +108,8 @@ fun SignUpForm(modifier: Modifier, viewModel: SignUpViewModel){
     Column(modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("Please provide the necessary data to create your user account")
+        Text("Please provide the necessary data to create your user account", fontSize = 18.sp,
+            modifier = Modifier.padding(start=16.dp, end=16.dp))
         SimpleUsername(label="User Name", viewModel = viewModel) //will be name
         SimpleEmail(label="Email", viewModel = viewModel) //will be email
         SimplePassword(label="Password", viewModel = viewModel) //will be password
