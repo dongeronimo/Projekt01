@@ -8,6 +8,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -15,7 +16,7 @@ import java.util.*
 import javax.inject.Named
 
 @Module
-@InstallIn(ActivityComponent::class)
+@InstallIn(SingletonComponent::class)
 object CognitoServiceModule {
     @Provides
     @Named("real")
@@ -26,8 +27,7 @@ object CognitoServiceModule {
     }
     @Provides
     @Named("mockHappyPath")
-    fun provideMockSignUpSuccess(@ApplicationContext appContext: Context,
-                                 @Named("mock") cognitoPoolData: CognitoPoolDataSource)
+    fun provideMockSignUpSuccess()
         : CognitoService = object : CognitoService {
         override suspend fun signUp(
             userId: String,
@@ -52,8 +52,7 @@ object CognitoServiceModule {
     }
     @Provides
     @Named("mockFailureBadConfirmationCode")
-    fun provideBadConfirmationCode(@ApplicationContext appContext: Context,
-                                   @Named("mock") cognitoPoolData: CognitoPoolDataSource) :
+    fun provideBadConfirmationCode() :
             CognitoService = object :CognitoService {
         override suspend fun signUp(
             userId: String,
@@ -76,8 +75,7 @@ object CognitoServiceModule {
 
     @Provides
     @Named("mockFailureCodeExpired")
-    fun provideCodeExpired(@ApplicationContext appContext: Context,
-                           @Named("mock") cognitoPoolData: CognitoPoolDataSource) :
+    fun provideCodeExpired() :
             CognitoService = object :CognitoService {
         override suspend fun signUp(
             userId: String,
@@ -100,8 +98,7 @@ object CognitoServiceModule {
 
     @Provides
     @Named("mockFailureUsernameExists")
-    fun provideMockSignUpFailureUsernameExists(@ApplicationContext appContext: Context,
-                                 @Named("mock") cognitoPoolData: CognitoPoolDataSource)
+    fun provideMockSignUpFailureUsernameExists()
             : CognitoService = object : CognitoService {
         override suspend fun signUp(
             userId: String,
@@ -123,8 +120,7 @@ object CognitoServiceModule {
 
     @Provides
     @Named("mockFailureError")
-    fun provideMockSignUpFailureError(@ApplicationContext appContext: Context,
-                                      @Named("mock") cognitoPoolData: CognitoPoolDataSource)
+    fun provideMockSignUpFailureError()
             : CognitoService = object : CognitoService {
         override suspend fun signUp(
             userId: String,
