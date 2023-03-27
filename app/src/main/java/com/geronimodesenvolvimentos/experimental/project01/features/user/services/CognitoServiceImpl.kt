@@ -13,6 +13,7 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHan
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.util.CognitoServiceConstants.CHLG_TYPE_USER_PASSWORD
 import com.amazonaws.services.cognitoidentityprovider.model.CodeMismatchException
 import com.amazonaws.services.cognitoidentityprovider.model.ExpiredCodeException
+import com.amazonaws.services.cognitoidentityprovider.model.InvalidParameterException
 import com.amazonaws.services.cognitoidentityprovider.model.InvalidPasswordException
 import com.amazonaws.services.cognitoidentityprovider.model.NotAuthorizedException
 import com.amazonaws.services.cognitoidentityprovider.model.UserNotConfirmedException
@@ -48,7 +49,14 @@ class CognitoServiceImpl(private val appContext:Context,
                     result = CognitoInvalidPassword
                 }
                 else if(exception is UsernameExistsException){
-                    CognitoErrorUsernameAlredyExists;
+                    result = CognitoErrorUsernameAlredyExists;
+                }
+                if(exception is InvalidParameterException){
+                    exception.localizedMessage?.let{
+                        result = CognitoInvalidParameter(it)
+                    }?:run{
+                        result = CognitoUnknownError
+                    }
                 }
                 else {
                     result = CognitoUnknownError;

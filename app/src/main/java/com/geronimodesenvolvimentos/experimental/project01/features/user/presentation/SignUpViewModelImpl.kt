@@ -1,6 +1,7 @@
 package com.geronimodesenvolvimentos.experimental.project01.features.user.presentation
 
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,11 +19,10 @@ class SignUpViewModelImpl @Inject constructor(
     @Named("real")
     private val cognitoService:CognitoService
 ): SignUpViewModel(), LifecycleObserver {
-
-
     override fun doSignUp(){
         viewModelScope.launch {
-            cognitoService.signUp(username, password, email)
+            val result = cognitoService.signUp(username, password, email)
+            Log.d("GEGE", "status=${result.state}; error = ${result.errorMessage?:{"no error"}}")
         }
     }
 

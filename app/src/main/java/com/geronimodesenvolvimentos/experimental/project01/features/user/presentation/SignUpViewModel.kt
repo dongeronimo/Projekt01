@@ -12,15 +12,19 @@ abstract class SignUpViewModel : ViewModel() {
         private set
     var password by mutableStateOf("")
         private set
+    var allFieldsAreSet by mutableStateOf(false)
+        private set
     fun updateUsername(value: String) {
         username = value
+        allFieldsAreSet =  username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()
     }
     fun updateEmail(value: String) {
         email = value
+        allFieldsAreSet =  username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()
     }
     fun updatePassword(value: String) {
         password = value
+        allFieldsAreSet =  username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()
     }
-
     abstract fun doSignUp()
 }

@@ -4,6 +4,7 @@ import java.util.*
 
 enum class CognitoState {
     SENT_VERIFICATION_CODE_TO_EMAIL,
+    INVALID_PARAMETER,
     INVALID_PASSWORD,
     CONFIRMED,
     BAD_CONFIRMATION_CODE,
@@ -19,6 +20,7 @@ data class Tokens(val accessToken:String, val accessTokenExpiration: Date,
 data class CognitoResponse(val state:CognitoState) {
     var tokens: Tokens? = null
     var username: String? = null
+    var errorMessage: String? = null
 }
 
 
@@ -40,3 +42,5 @@ fun CognitoLogInResult(name: String,
         tokens = Tokens(accessToken, accessTokenExpiration, refreshToken, idToken)
         username = name
     }
+fun CognitoInvalidParameter(error:String) =
+    CognitoResponse(state = CognitoState.INVALID_PARAMETER).apply { errorMessage = error }

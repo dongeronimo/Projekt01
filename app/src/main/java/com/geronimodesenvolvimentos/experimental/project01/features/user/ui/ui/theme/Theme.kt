@@ -19,31 +19,12 @@ private val DarkColorPalette = darkColors(
     onSurface = Color.White,//ok
 )
 
-private val LightColorPalette = lightColors(
-    primary = Purple500,
-    primaryVariant = Purple700,
-    secondary = Teal200,
-
-
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-
-)
-
 @Composable
-fun Project01Theme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        DarkColorPalette
-    }
+fun Project01Theme(darkTheme: Boolean = isSystemInDarkTheme(),
+                   content: @Composable () -> Unit) {
 
     MaterialTheme(
-        colors = colors,
+        colors = DarkColorPalette,
         typography = Typography,
         shapes = Shapes,
         content = content
