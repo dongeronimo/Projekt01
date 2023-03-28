@@ -6,17 +6,21 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateSizeAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-
+import androidx.compose.foundation.Image
 import androidx.compose.ui.Alignment
 
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -27,6 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.geronimodesenvolvimentos.experimental.project01.ErrorMessage
+import com.geronimodesenvolvimentos.experimental.project01.R
 import com.geronimodesenvolvimentos.experimental.project01.features.user.presentation.SignUpViewModel
 import com.geronimodesenvolvimentos.experimental.project01.features.user.presentation.SignUpViewModelImpl
 
@@ -108,7 +114,11 @@ fun Title(modifier:Modifier){
 
 @Composable
 fun SignUpForm(modifier: Modifier, viewModel: SignUpViewModel){
-    Column(modifier.fillMaxWidth().padding(top=32.dp),
+
+    Column(
+        modifier
+            .fillMaxWidth()
+            .padding(top = 32.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally) {
         Text("Please provide the necessary data to create your user account", fontSize = 18.sp,
@@ -116,62 +126,76 @@ fun SignUpForm(modifier: Modifier, viewModel: SignUpViewModel){
         SimpleUsername(label="User Name", viewModel = viewModel) //will be name
         SimpleEmail(label="Email", viewModel = viewModel) //will be email
         SimplePassword(label="Password", viewModel = viewModel) //will be password
+        ErrorMessage(msg = viewModel.generalError)
+
     }
 }
 @Composable
 fun SimpleUsername(label:String, viewModel: SignUpViewModel) {
-    TextField(
-        value = viewModel.username,
-        onValueChange = { value -> viewModel.updateUsername(value) },
-        label = { Text(label) },
-        maxLines = 1,
-        textStyle = TextStyle(color = Color.Blue, fontWeight = FontWeight.Bold),
-        modifier = Modifier
-            .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 16.dp)
-            .fillMaxWidth(),
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-    )
+    Column() {
+        Row() {
+            TextField(
+                value = viewModel.username,
+                onValueChange = { value -> viewModel.updateUsername(value) },
+                label = { Text(label) },
+                maxLines = 1,
+                textStyle = TextStyle(fontWeight = FontWeight.Bold),
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 0.dp)
+                    .fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            )
+        }
+        ErrorMessage(msg = viewModel.usernameError)
+    }
 }
 
 @Composable
 fun SimpleEmail(label:String, viewModel: SignUpViewModel) {
-    TextField(
-        value = viewModel.email,
-        onValueChange = { value -> viewModel.updateEmail(value) },
-        label = { Text(label) },
-        maxLines = 1,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email,
-            imeAction = ImeAction.Next),
-        textStyle = TextStyle(color = Color.Blue, fontWeight = FontWeight.Bold),
-        modifier = Modifier
-            .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 16.dp)
-            .fillMaxWidth()
-    )
+    Column() {
+        TextField(
+            value = viewModel.email,
+            onValueChange = { value -> viewModel.updateEmail(value) },
+            label = { Text(label) },
+            maxLines = 1,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next),
+            textStyle = TextStyle(color = Color.Blue, fontWeight = FontWeight.Bold),
+            modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 16.dp)
+                .fillMaxWidth()
+        )
+        ErrorMessage(msg = viewModel.emailError)
+    }
 }
 
 @Composable
 fun SimplePassword(label:String, viewModel: SignUpViewModel) {
+    Column() {
+        TextField(
+            value = viewModel.password,
+            onValueChange = { value->viewModel.updatePassword(value) },
+            label = { Text(label) },
+            maxLines = 1,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Send),
+            textStyle = TextStyle(color = Color.Blue, fontWeight = FontWeight.Bold),
+            modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 16.dp)
+                .fillMaxWidth()
+        )
+        ErrorMessage(msg = viewModel.passwordError)
+    }
 
-
-    TextField(
-        value = viewModel.password,
-        onValueChange = { value->viewModel.updatePassword(value) },
-        label = { Text(label) },
-        maxLines = 1,
-        visualTransformation = PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password,
-            imeAction = ImeAction.Send),
-        textStyle = TextStyle(color = Color.Blue, fontWeight = FontWeight.Bold),
-        modifier = Modifier
-            .padding(start = 16.dp, end = 16.dp, top = 32.dp, bottom = 16.dp)
-            .fillMaxWidth()
-    )
 }
 @Composable
 fun SignUpBottomButton(modifier:Modifier, onSignUpClick:()->Unit={}, viewModel: SignUpViewModel){
     //val size = if(viewModel.allFieldsAreSet) 64.dp else 0.dp
     val size by animateDpAsState(targetValue = if(viewModel.allFieldsAreSet) 64.dp else 0.dp)
-    Column(modifier = modifier.fillMaxWidth().height(size),
+    Column(modifier = modifier
+        .fillMaxWidth()
+        .height(size),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally) {
 

@@ -26,6 +26,7 @@ class CognitoServiceImpl(private val appContext:Context,
     private val userPool = CognitoUserPool(appContext, cognitoPoolDataSource.getPoolID(),
         cognitoPoolDataSource.getClientID(), cognitoPoolDataSource.getClientSecret(),
         cognitoPoolDataSource.getAwsRegion())
+
     override suspend fun signUp(
         userId: String,
         password: String,

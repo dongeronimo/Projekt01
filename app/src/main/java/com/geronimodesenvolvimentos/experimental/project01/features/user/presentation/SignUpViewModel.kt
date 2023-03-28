@@ -6,6 +6,15 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 
 abstract class SignUpViewModel : ViewModel() {
+    var usernameError by mutableStateOf("")
+        protected set
+    var emailError by mutableStateOf("")
+        protected set
+    var passwordError by mutableStateOf("")
+        protected set
+    var generalError by mutableStateOf("")
+        protected set
+
     var username by mutableStateOf("")
         private set
     var email by mutableStateOf("")
@@ -15,15 +24,15 @@ abstract class SignUpViewModel : ViewModel() {
     var allFieldsAreSet by mutableStateOf(false)
         private set
     fun updateUsername(value: String) {
-        username = value
+        username = value.trim()
         allFieldsAreSet =  username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()
     }
     fun updateEmail(value: String) {
-        email = value
+        email = value.trim()
         allFieldsAreSet =  username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()
     }
     fun updatePassword(value: String) {
-        password = value
+        password = value.trim()
         allFieldsAreSet =  username.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty()
     }
     abstract fun doSignUp()
